@@ -24,6 +24,7 @@ public class EstudanteService {
         if (!estudanteRepository.existsById(id)) {
             throw new EntityNotFoundException("Usuário não encontrado com ID: " + id);
         }
+
         estudanteRepository.deleteById(id);
     }
     public Estudante atualizarEstudante(Integer id, Estudante estudanteAtualizado) {
@@ -56,6 +57,9 @@ public class EstudanteService {
         estudante.setDataNascimento(dto.getDataNascimento());
         estudante.setTipoAlimentacao(dto.getTipoAlimentacao());
         estudante.setSuperioridadePais(dto.getSuperioridadePais());
+        estudante.setNotaExatas(dto.getNotaExatas());
+        estudante.setNotaLinguagens(dto.getNotaLinguagens());
+        estudante.setNotaCiencias(dto.getNotaCiencias());
 
         return estudanteRepository.save(estudante);
     }

@@ -16,4 +16,7 @@ public class EstudanteRequestDTO {
     private Date dataNascimento;
     private String tipoAlimentacao;
     private String superioridadePais;
+    private double notaExatas;
+    private double notaLinguagens;
+    private double notaCiencias;
 }

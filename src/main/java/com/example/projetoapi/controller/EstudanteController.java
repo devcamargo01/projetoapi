@@ -27,15 +27,14 @@ public class EstudanteController {
     public Estudante inserirEstudantes(EstudanteRequestDTO estudante) {
         return estudanteService.inserirEstudante(estudante);
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("excluir/{id}")
     public ResponseEntity<Void> excluirUsuario(@PathVariable Integer id) {
         estudanteService.excluirEstudante(id);
         return ResponseEntity.noContent().build(); // HTTP 204
     }
-    @PutMapping("/{id}")
+    @PutMapping("atualizar/{id}")
     public ResponseEntity<Estudante> atualizarUsuario(@PathVariable Integer id, @RequestBody Estudante estudante) {
         Estudante atualizado = estudanteService.atualizarEstudante(id, estudante);
         return ResponseEntity.ok(atualizado);
     }
-
 }

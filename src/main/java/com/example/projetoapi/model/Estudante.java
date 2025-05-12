@@ -21,6 +21,7 @@ public class Estudante {
     private String nome;
     private String sobrenome;
     private String email;
+    private String senha;
     private int ano;
     private String serie;
     private String genero;
