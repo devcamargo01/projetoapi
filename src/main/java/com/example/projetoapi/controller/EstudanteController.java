@@ -30,7 +30,7 @@ public class EstudanteController {
     @DeleteMapping("excluir/{id}")
     public ResponseEntity<Void> excluirUsuario(@PathVariable Integer id) {
         estudanteService.excluirEstudante(id);
-        return ResponseEntity.noContent().build(); // HTTP 204
+        return ResponseEntity.noContent().build();
     }
     @PutMapping("atualizar/{id}")
     public ResponseEntity<Estudante> atualizarUsuario(@PathVariable Integer id, @RequestBody Estudante estudante) {
