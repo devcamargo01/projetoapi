@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: projeto-api-spring
+    env: docker
+    region: oregon         # Ou altere para 'frankfurt' ou outra região se quiser
+    plan: free             # Plano gratuito (ou 'starter', 'standard', etc.)
+    branch: main           # Ou o nome da branch principal do seu repositório
+    dockerfilePath: ./Dockerfile
+    buildCommand: ""       # Deixe vazio porque o Docker já faz o build
+    startCommand: ""       # O comando já está definido no Dockerfile
+    autoDeploy: true
+    healthCheckPath: /     # Altere se sua API tiver outro endpoint de verificação
