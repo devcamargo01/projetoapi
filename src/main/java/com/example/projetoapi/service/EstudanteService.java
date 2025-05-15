@@ -4,14 +4,17 @@ import com.example.projetoapi.dto.EstudanteRequestDTO;
 import com.example.projetoapi.model.Estudante;
 import com.example.projetoapi.repository.EstudanteRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EstudanteService {
     private final EstudanteRepository estudanteRepository;
+    private PasswordEncoder passwordEncoder;
 
     public EstudanteService(EstudanteRepository estudanteRepository) {
         this.estudanteRepository = estudanteRepository;
@@ -62,5 +65,13 @@ public class EstudanteService {
         estudante.setNotaCiencias(dto.getNotaCiencias());
 
         return estudanteRepository.save(estudante);
+    }
+    public boolean authenticate(String email, String senha) {
+        Optional<Estudante> estudanteOpt = estudanteRepository.findByEmail(email);
+        if (estudanteOpt.isPresent()) {
+            Estudante estd = estudanteOpt.get();
+            return passwordEncoder.matches(senha, estd.getSenha());
+        }
+        return false;
     }
 }
