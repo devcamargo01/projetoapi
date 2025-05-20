@@ -11,6 +11,7 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Estudante {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,7 @@ public class Estudante {
     private int ano;
     private String serie;
     private String genero;
-    private Date dataNascimento;
+    private String dataNascimento;
     private String superioridadePais;
     private String tipoAlimentacao;
     private double notaExatas;

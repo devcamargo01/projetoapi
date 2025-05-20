@@ -1,59 +1,42 @@
 package com.example.projetoapi.controller;
 
-
-import com.example.projetoapi.dto.EstudanteRequestDTO;
+import com.example.projetoapi.dto.EstudanteDTO;
 import com.example.projetoapi.model.Estudante;
 import com.example.projetoapi.service.EstudanteService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/escola")
+@RequestMapping("/estudantes")
 public class EstudanteController {
 
-    private final EstudanteService estudanteService;
+    @Autowired
+    private EstudanteService service;
 
-    public EstudanteController(EstudanteService estudanteService) {
-        this.estudanteService = estudanteService;
+    @PostMapping("/inserir")
+    public Estudante create(@RequestBody EstudanteDTO dto) {
+        return service.create(dto);
     }
 
     @GetMapping("/gerenciar")
-    public List<Estudante> listarEstudantes() {
-        return estudanteService.listarEstudantes();
+    public List<Estudante> getAll() {
+        return service.getAll();
     }
-    @PostMapping("/inserir")
-    public Estudante inserirEstudantes(EstudanteRequestDTO estudante) {
-        return estudanteService.inserirEstudante(estudante);
+
+    @GetMapping("gerenciar/{id}")
+    public Estudante getById(@PathVariable Integer id) {
+        return service.getById(id);
     }
-    @DeleteMapping("excluir/{id}")
-    public ResponseEntity<Void> excluirUsuario(@PathVariable Integer id) {
-        estudanteService.excluirEstudante(id);
-        return ResponseEntity.noContent().build();
-    }
+
     @PutMapping("atualizar/{id}")
-    public ResponseEntity<Estudante> atualizarUsuario(@PathVariable Integer id, @RequestBody Estudante estudante) {
-        Estudante atualizado = estudanteService.atualizarEstudante(id, estudante);
-        return ResponseEntity.ok(atualizado);
+    public Estudante update(@PathVariable Integer id, @RequestBody EstudanteDTO dto) {
+        return service.update(id, dto);
     }
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String email,
-                                   @RequestParam String senha,
-                                   HttpSession session) {
-        boolean success = estudanteService.authenticate(email, senha);
-        if (success) {
-            session.setAttribute("email", email);
-            return ResponseEntity.ok("Login realizado com sucesso!");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha inválidos.");
-        }
-    }
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession sessao) {
-        sessao.invalidate();
-        return ResponseEntity.ok("Logout realizado.");
+
+    @DeleteMapping("excluir/{id}")
+    public void delete(@PathVariable Integer id) {
+        service.delete(id);
     }
 }

@@ -1,77 +1,82 @@
 package com.example.projetoapi.service;
 
-import com.example.projetoapi.dto.EstudanteRequestDTO;
+import com.example.projetoapi.dto.EstudanteDTO;
 import com.example.projetoapi.model.Estudante;
 import com.example.projetoapi.repository.EstudanteRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EstudanteService {
-    private final EstudanteRepository estudanteRepository;
-    private PasswordEncoder passwordEncoder;
 
-    public EstudanteService(EstudanteRepository estudanteRepository) {
-        this.estudanteRepository = estudanteRepository;
+    @Autowired
+    private EstudanteRepository repository;
+
+    public Estudante create(EstudanteDTO dto) {
+        Estudante student = calcularDados(dto);
+        return repository.save(student);
     }
 
-    public List<Estudante> listarEstudantes() {
-        return estudanteRepository.findAll();
+    public List<Estudante> getAll() {
+        return repository.findAll();
     }
-    public void excluirEstudante(Integer id) {
-        if (!estudanteRepository.existsById(id)) {
-            throw new EntityNotFoundException("Usuário não encontrado com ID: " + id);
+
+    public Estudante getById(Integer id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public Estudante update(Integer id, EstudanteDTO dto) {
+        Estudante existing = repository.findById(id).orElse(null);
+        if (existing != null) {
+            Estudante atualizado = calcularDados(dto);
+            atualizado.setId(id);
+            return repository.save(atualizado);
         }
-
-        estudanteRepository.deleteById(id);
+        return null;
     }
-    public Estudante atualizarEstudante(Integer id, Estudante estudanteAtualizado) {
-        Estudante estudanteExistente = estudanteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com ID: " + id));
 
-        estudanteExistente.setNome(estudanteAtualizado.getNome());
-        estudanteExistente.setEmail(estudanteAtualizado.getEmail());
-        estudanteExistente.setAno(estudanteAtualizado.getAno());
-        estudanteExistente.setSerie(estudanteAtualizado.getSerie());
-        estudanteExistente.setNotaExatas(estudanteAtualizado.getNotaExatas());
-        estudanteExistente.setNotaLinguagens(estudanteAtualizado.getNotaLinguagens());
-        estudanteExistente.setNotaCiencias(estudanteAtualizado.getNotaCiencias());
-
-        return estudanteRepository.save(estudanteExistente);
+    public void delete(Integer id) {
+        repository.deleteById(id);
     }
-    public Estudante inserirEstudante(EstudanteRequestDTO dto) {
-        String[] partes = dto.getNomeCompleto().trim().split("\\s+");
 
-        String nome = partes[0];
-        String sobrenome = partes.length > 1
-                ? String.join(" ", Arrays.copyOfRange(partes, 1, partes.length))
-                : "";
+    private Estudante calcularDados(EstudanteDTO dto) {
+        double media = (dto.getNotaExatas() + dto.getNotaLinguagens() + dto.getNotaCiencias()) / 3.0;
 
-        Estudante estudante = new Estudante();
-        estudante.setNome(nome);
-        estudante.setSobrenome(sobrenome);
-        estudante.setEmail(dto.getEmail());
-        estudante.setGenero(dto.getGenero());
-        estudante.setDataNascimento(dto.getDataNascimento());
-        estudante.setTipoAlimentacao(dto.getTipoAlimentacao());
-        estudante.setSuperioridadePais(dto.getSuperioridadePais());
-        estudante.setNotaExatas(dto.getNotaExatas());
-        estudante.setNotaLinguagens(dto.getNotaLinguagens());
-        estudante.setNotaCiencias(dto.getNotaCiencias());
+        String desempenho;
+        if (media >= 80) desempenho = "Excelente";
+        else if (media >= 60) desempenho = "Bom";
+        else if (media >= 40) desempenho = "Médio";
+        else desempenho = "Ruim";
 
-        return estudanteRepository.save(estudante);
-    }
-    public boolean authenticate(String email, String senha) {
-        Optional<Estudante> estudanteOpt = estudanteRepository.findByEmail(email);
-        if (estudanteOpt.isPresent()) {
-            Estudante estd = estudanteOpt.get();
-            return passwordEncoder.matches(senha, estd.getSenha());
-        }
-        return false;
+        String statusExatas = dto.getNotaExatas() > 60 ? "Aprovado" : "Reprovado";
+        String statusLinguagens = dto.getNotaLinguagens() > 60 ? "Aprovado" : "Reprovado";
+        String statusCiencias = dto.getNotaCiencias() > 60 ? "Aprovado" : "Reprovado";
+
+        int aprovados = 0;
+        if (statusExatas.equals("Aprovado")) aprovados++;
+        if (statusLinguagens.equals("Aprovado")) aprovados++;
+        if (statusCiencias.equals("Aprovado")) aprovados++;
+
+        String statusFinal = aprovados >= 2 ? "Aprovado" : "Reprovado";
+
+        return Estudante.builder()
+                .nome(dto.getNome())
+                .sobrenome(dto.getSobrenome())
+                .genero(dto.getGenero())
+                .dataNascimento(dto.getDataNascimento())
+                .superioridadePais(dto.getEscolaridadePais())
+                .tipoAlimentacao(dto.getTipoAlimentacao())
+                .notaExatas(dto.getNotaExatas())
+                .notaLinguagens(dto.getNotaLinguagens())
+                .notaCiencias(dto.getNotaCiencias())
+                .mediaGeral(media)
+                .desempenho(desempenho)
+                .statusExatas(statusExatas)
+                .statusLinguagens(statusLinguagens)
+                .statusCiencias(statusCiencias)
+                .statusFinal(statusFinal)
+                .build();
     }
 }
