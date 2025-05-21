@@ -11,6 +11,7 @@ import java.util.List;
 @Service
 public class EstudanteService {
 
+    //Utilizar a injeção de dependências com construtor
     @Autowired
     private EstudanteRepository repository;
 
@@ -61,6 +62,7 @@ public class EstudanteService {
 
         String statusFinal = aprovados >= 2 ? "Aprovado" : "Reprovado";
 
+        //uso de um record facilitaria o retorno de um Estudante
         return Estudante.builder()
                 .nome(dto.getNome())
                 .sobrenome(dto.getSobrenome())

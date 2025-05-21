@@ -1,10 +1,12 @@
 package com.example.projetoapi.model;
 
+// especifique os imports exemplo: import jakarta.persistence.GeneratedValue; evite usar .*
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
 
+//utilize o @Data
 @Entity
 @Getter
 @Setter
@@ -37,4 +39,5 @@ public class Estudante {
     private String statusCiencias;
     private String statusFinal;
 
+    //Verificar se os nomes dos atributos são iguais as colunas da tabela no banco, se necessário use o @Column
 }
